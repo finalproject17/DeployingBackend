@@ -35,20 +35,20 @@ const userSchema = new mongoose.Schema({
     facebook: { type: String },
   },
   isActive: { type: Boolean, default: true },
-  education: {
+  education:[{
     title: { type: String },
     academy: { type: String },
     from:{type:String ,enum: fromDate},
     to:{type:String ,enum: toDate},
     description:{type: String}
-  },
-  workAndExperience: {
+  }],
+  workAndExperience: [{
     title: { type: String },
     academy: { type: String },
     from:{type:String ,enum: fromDate},
     to:{type:String ,enum: toDate},
     description:{type: String}
-  }
+  }]
 });
 
 const User = mongoose.model("User", userSchema);
