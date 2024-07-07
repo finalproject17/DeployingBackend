@@ -151,7 +151,8 @@ const register = async (req, res) => {
     if (user) {
       return res.status(400).json({ message: "User already exists" });
     }
-
+    const defaultProfilePhoto = "https://www.pngall.com/wp-content/uploads/5/User-Profile-PNG-Image.png";
+    const userProfilePhoto = profilePhoto && profilePhoto.trim() !== "" ? profilePhoto : defaultProfilePhoto;
     user = new usersModel({
       firstName,
       lastName,
@@ -164,13 +165,13 @@ const register = async (req, res) => {
       experienceLevel,
       desiredJobType,
       qualifications,
-      profilePhoto,
+      profilePhoto: userProfilePhoto,
       skills,
       overview,
       socialMedia,
       isActive,
       education,
-      workAndExperience
+      workAndExperience,
     });
 
     const salt = await bcrypt.genSalt(10);

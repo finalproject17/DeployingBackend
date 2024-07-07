@@ -11,14 +11,15 @@ const auth = require("./middlewares/auth");
 const savedJobRoutes = require("./routes/savedJobsRoute");
 const appliedJobsRoute = require("./routes/appliedJobsRoute"); 
 const upload =require("./routes/upload")
+const cookieParser = require('cookie-parser');
 
 app.use(
   cors({
     origin: "*",
     credentials: true,
     allowedHeaders:
-      "Origin, X-Requested-With, Content-Type, Accept, Authorization",
-    methods: "GET, POST, PATCH, DELETE, OPTIONS",
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization , 'User-Id'",
+    methods: "GET, POST, PATCH, DELETE, OPTIONS, PUT",
   })
 );
 
@@ -31,6 +32,7 @@ app.use("/companies", CompanyRoute);
 app.use("/savedJobs", savedJobRoutes);
 app.use("/appliedJobs", appliedJobsRoute);
 app.use("/upload", upload);
+app.use(cookieParser());
 
 mongoose
   .connect(process.env.MONGO)

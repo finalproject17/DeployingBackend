@@ -12,7 +12,8 @@ const {
   countCompaniesInCity,
   countAllCompanies,
   sendEmail,
-  resetPassword
+  resetPassword,
+  logout
 } = require('../controllers/CompanyController');
 const { auth } = require('../middlewares/auth');
 
@@ -28,5 +29,5 @@ router.get('/city/:city', getCompaniesByCity);
 router.get('/count/:city', countCompaniesInCity);
 router.get('/count-all', countAllCompanies);
 router.post('/resetPassword', resetPassword)
-
+router.post('/logout', logout);
 module.exports = router;

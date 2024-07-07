@@ -11,38 +11,28 @@ const smtpTransport = require('nodemailer-smtp-transport');
 const signup = async (req, res, next) => {
   const files = req.files;
   const company = req.body;
-  console.log('Received Data:', company); 
-
-  // if (!files || !files.companyLogo || !files.companyImage) {
-  //   return res.status(400).json({ message: "There is no image in this request" });
-  // }
-
-  // const logoFileName = files.companyLogo[0].filename;
-  // const imageFileName = files.companyImage[0].filename;
+  console.log('Received Data:', company);
 
   try {
-    // const basePath = `${req.protocol}://${req.get("host")}/uploads/`;
-    // company.companyLogo = `${basePath}${logoFileName}`;
-    // company.companyImage = `${basePath}${imageFileName}`;
-    console.log(req.protocol)
-    console.log(req.get("host"))
+    console.log(req.protocol);
+    console.log(req.get("host"));
 
+    const { companyName, companyIndustry, companyEmail, companyPassword, companySize, foundedYear, phone, city, state, companyLogo, companyImage } = req.body;
 
-    const { companyName, companyIndustry, companyEmail, companyPassword, companyLocation, companySize, foundedYear,phone,city,state} = req.body;
-
-    if (!companyName || !companyIndustry || !companyEmail || !companyPassword  ||  !companySize ||!foundedYear||!phone || !state || !city) {
-      return res.status(400).json({ message: 'Email, password, name, industry,  state, and city are required' });
+    if (!companyName || !companyIndustry || !companyEmail || !companyPassword || !companySize || !foundedYear || !phone || !state || !city) {
+      return res.status(400).json({ message: 'Email, password, name, industry, state, and city are required' });
     }
 
     const existingCompany = await companyModel.findOne({ companyEmail });
     if (existingCompany) {
-      return res
-        .status(409)
-        .json({ message: "Company with this email already exists" });
+      return res.status(409).json({ message: "Company with this email already exists" });
     }
 
-    // const hashedPassword = await bcrypt.hash(companyPassword, 10);
+    const defaultLogoPath = "https://pic.onlinewebfonts.com/svg/img_148020.svg";
+    const defaultImagePath = "https://d31kswug2i6wp2.cloudfront.net/fallback/company/medium_logo_default.png";
 
+    const logoPath = files && files.companyLogo && files.companyLogo[0] ? `${req.protocol}://${req.get("host")}/uploads/${files.companyLogo[0].filename}` : defaultLogoPath;
+    const imagePath = files && files.companyImage && files.companyImage[0] ?` ${req.protocol}://${req.get("host")}/uploads/${files.companyImage[0].filename} `: defaultImagePath;
     const newCompany = new companyModel({
       companyName,
       companyIndustry,
@@ -53,26 +43,17 @@ const signup = async (req, res, next) => {
       city,
       state,
       companyPassword,
-      // companyLogo: `${basePath}${logoFileName}`,
-      // companyImage: `${basePath}${imageFileName}`,
-      // companyLocation: {
-      //   state: companyLocation.state,
-      //   city: companyLocation.city
-      // }
+      companyLogo: logoPath,
+      companyImage: imagePath
     });
 
     await newCompany.save();
 
-    return res
-      .status(201)
-      .json({ message: "Company created successfully", company: newCompany });
+    return res.status(201).json({ message: "Company created successfully", company: newCompany });
   } catch (error) {
-    return res
-      .status(500)
-      .json({ message: "Error creating company", error: error.message });
+    return res.status(500).json({ message: "Error creating company", error: error.message });
   }
 };
-
 const companyLogin = async (req, res) => {
   let { companyEmail, companyPassword } = req.body;
 
@@ -348,11 +329,15 @@ const countAllCompanies = async (req, res) => {
 
 
 
+const logout = (req, res) => {
+  res.clearCookie('token');
+  console.log('Token cleared from cookies');
+  res.status(200).json({ message: 'Logout successful' });
+};
 
 
 
 
 
 
-
-module.exports = {signup, getCompanyById,getAllCompanies, companyLogin,updateCompanyData,deleteCompanyData,getCompaniesByCity,countCompaniesInCity,countAllCompanies,sendEmail,resetPassword};
+module.exports = {signup, getCompanyById,getAllCompanies, companyLogin,updateCompanyData,deleteCompanyData,getCompaniesByCity,countCompaniesInCity,countAllCompanies,sendEmail,resetPassword,logout};

@@ -39,10 +39,6 @@ const companySchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    // companyLocation: {
-    //     state: String,
-    //     city: String
-    // },
     state: {
         type: String
     },
@@ -54,7 +50,6 @@ const companySchema = new mongoose.Schema({
     },
     companySize: {
         type: String,
-        // required: true,
       }
 }, { timestamps: true });
 
