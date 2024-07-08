@@ -4,17 +4,32 @@ const company =require('../models/CompanyModel')
 const getAllJobs = async (req, res) => {
     try {
         let jobs = await JobModel.find().populate('companyId', 'companyLogo companyName');
+
         res.status(200).json({
-            jobs: jobs.map(job => ({
-                ...job.toObject(),
-                companyLogo: job.companyId.companyLogo,
-                companyName: job.companyId.companyName
-            }))
+            jobs: jobs.map(job => {
+                let companyLogo = null;
+                let companyName = null;
+
+                if (job.companyId) {
+                    companyLogo = job.companyId.companyLogo;
+                    companyName = job.companyId.companyName;
+                } else {
+                    console.error(`Company ID is null for job ID: ${job._id}`);
+                }
+
+                return {
+                    ...job.toObject(),
+                    companyLogo,
+                    companyName
+                };
+            })
         });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
 };
+ 
+
 
 const getJobById = async (req, res) => {
     let { id } = req.params;
