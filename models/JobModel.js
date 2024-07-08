@@ -74,11 +74,6 @@ const JobSchema = new Schema({
     type: Number,
     default: 0,
   },
-  companyId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Company",
-    required: true,
-  },
   additionalJobForm: {
     type: Boolean,
     default:false,
