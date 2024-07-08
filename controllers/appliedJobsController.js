@@ -166,7 +166,6 @@ const getAllAppliedJobs = async (req, res) => {
 };
 
 
-
 //getJobByAppliedId
 
 const deleteAppliedJob = async (req, res) => {
@@ -207,6 +206,22 @@ const countAppliedJobsByUser = async (req, res) => {
   }
 };
 
+const getApplicantId = async (req, res) => {
+  try {
+    const jobId = new ObjectId(req.params.jobId);
+    const userId = new ObjectId(req.params.userId);
+    const findApplicant = await AppliedJob.findOne({ jobId, userId });
+
+    if (!findApplicant) {
+      return res.status(404).json({ message: "Applicant not found" });
+    }
+    res
+      .status(200)
+      .json(findApplicant);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 
-module.exports = { applyForJob, getAllAppliedJobsByJobSeeker, getAllAppliedJobs, deleteAppliedJob ,getCountByUser, countAppliedJobsByUser};
+module.exports = { applyForJob, getAllAppliedJobsByJobSeeker, getAllAppliedJobs, deleteAppliedJob ,getCountByUser, countAppliedJobsByUser,getApplicantId};

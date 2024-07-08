@@ -20,8 +20,8 @@ router.post("/requestotp", userController.RequestOTP);
 router.post("/verifyotp", userController.verifyOTP);
 router.post("/resetpassword", userController.resetPassword);
 router.post('/change-password',  userController.changePassword);
-
-
+router.post("/register/google", userController.registerWithGoogle);
+router.post("/login/google", userController.loginWithGoogle);
 
 const storage = multer.diskStorage({
     destination: function(req, file, cb) {

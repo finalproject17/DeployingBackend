@@ -246,9 +246,6 @@ const login = async (req, res) => {
 };
 
 
-
-
-
 //REQUEST OTP
 // const otps = new Map();
 const RequestOTP = async (req, res) => {
@@ -256,7 +253,7 @@ const RequestOTP = async (req, res) => {
   try {
     const user = await usersModel.findOne({ email });
     if (!user) {
-      console.log(`User with email ${email} not found`);
+     
       return res.status(404).send("User not found");
     }
 
@@ -280,14 +277,10 @@ const RequestOTP = async (req, res) => {
       res.status(200).json({ message: "OTP sent successfully" });
     });
   } catch (err) {
-    console.error(`RequestOTP Error: ${err.message}`);
+  
     res.status(500).json({ message: "Server error" });
   }
 };
-
-
-
-
 
 
 
@@ -320,12 +313,14 @@ const verifyOTP = async (req, res) => {
 
     res.send("OTP verified successfully");
   } catch (err) {
-    console.error(`VerifyOTP Error: ${err.message}`);
+  
     res.status(500).json({ message: "Server error" });
   }
 };
 
-//RESET PASS
+
+
+
 const resetPassword = async (req, res) => {
   const { email, newPassword } = req.body;
   try {
@@ -346,10 +341,93 @@ const resetPassword = async (req, res) => {
     otps.delete(user.id);
     res.send("Password reset successful");
   } catch (err) {
-    console.error(`ResetPassword Error: ${err.message}`);
     res.status(500).json({ message: "Server error" });
   }
 };
+
+const loginWithGoogle = async (req, res) => {
+  const { email } = req.body;
+
+  try {
+   
+    let user = await usersModel.findOne({ email });
+
+    if (!user) {
+    
+      return res.status(400).json({ message: "Invalid Credentials" });
+    }
+
+    const payload = {
+      user: {
+        id: user.id,
+      },
+    };
+
+
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      { expiresIn: 360000 },
+      (err, token) => {
+        if (err) {
+       
+          throw err;
+        }
+      
+        return res.json({ token, user: { ...user.toObject(), id: user.id } });
+      }
+    );
+  } catch (err) {
+
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+const registerWithGoogle = async (req, res) => {
+  const { firstName, lastName, email, googleId } = req.body;
+
+  try {
+        let user = await usersModel.findOne({ email });
+    if (user) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
+  
+    user = new usersModel({
+      firstName,
+      lastName,
+      email,
+      googleId,
+    });
+
+    await user.save();
+
+    
+    const payload = {
+      user: {
+        id: user.id,
+      },
+    };
+
+    
+    jwt.sign(
+      payload,
+      process.env.JWT_SECRET,
+      { expiresIn: 360000 },
+      (err, token) => {
+        if (err) {
+        
+          throw err;
+        }
+        res.json({ token, user });
+      }
+    );
+  } catch (err) {
+    
+    res.status(500).json({ message: "Server error" });
+  }
+};
+
 
 
 
@@ -366,5 +444,8 @@ module.exports = {
   RequestOTP,
   verifyOTP,
   resetPassword,
-  changePassword
+  changePassword,
+  loginWithGoogle,
+registerWithGoogle
+
 };
