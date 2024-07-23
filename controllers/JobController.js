@@ -70,6 +70,26 @@ const getJobsByCompanyId = async (req, res) => {
     }
 };
 
+const getAllJobsByCompanyId = async (req, res) => {
+    const { companyId } = req.params;
+    try {
+        const jobs = await JobModel.find({ companyId }).populate('companyId', 'companyLogo companyName');
+        if (jobs.length > 0) {
+            res.status(200).json({
+                jobs: jobs.map(job => ({
+                    ...job.toObject(),
+                    companyLogo: job.companyId.companyLogo,
+                    companyName: job.companyId.companyName
+                }))
+            });
+        } else {
+            res.status(200).json({ message: [] });
+        }
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
 
 
 const foundedJobByIdDona = async (req, res) => {
@@ -265,4 +285,4 @@ try{
 
 
 
-module.exports = {filterSalaryBudget,postNewJob,getAllJobs,getJobById,updateJobById,deleteJobById,deleteAllJobs,getJobsByCompanyName,filterJobsByLocationState,getJobsBySalary,filterJobsByLocationGovernment,getCountByCompanyName,getCountByState,getAllCounts,getJobsByCompanyId, foundedJobByIdDona};
+module.exports = {filterSalaryBudget,postNewJob,getAllJobs,getJobById,updateJobById,deleteJobById,deleteAllJobs,getJobsByCompanyName,filterJobsByLocationState,getJobsBySalary,filterJobsByLocationGovernment,getCountByCompanyName,getCountByState,getAllCounts,getJobsByCompanyId, foundedJobByIdDona,getAllJobsByCompanyId};
